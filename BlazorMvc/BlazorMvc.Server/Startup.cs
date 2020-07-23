@@ -22,6 +22,11 @@ namespace BlazorMvc.Server
             // services.AddMvc();
             services.AddControllersWithViews();
             // services.AddRazorPages();
+
+            services.AddCors(options => {
+                // options.AddPolicy("AllowAny", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+                options.AddDefaultPolicy(options => options.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -44,6 +49,9 @@ namespace BlazorMvc.Server
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            // app.UseCors("AllowAny");
+            app.UseCors();
 
             app.UseEndpoints(endpoints =>
             {
