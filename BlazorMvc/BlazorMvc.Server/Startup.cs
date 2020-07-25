@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
+using System;
 
 namespace BlazorMvc.Server
 {
@@ -21,11 +24,21 @@ namespace BlazorMvc.Server
         {
             // services.AddMvc();
             services.AddControllersWithViews();
-            // services.AddRazorPages();
+            // services.AddRazorPages(); 
 
-            services.AddCors(options => {
-                // options.AddPolicy("AllowAny", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
-                options.AddDefaultPolicy(options => options.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+            services.AddHsts(options =>
+            {
+                options.Preload = true;
+                options.IncludeSubDomains = true;
+                options.MaxAge = TimeSpan.FromDays(60);
+                //options.ExcludedHosts.Add("example.com");
+                //options.ExcludedHosts.Add("www.example.com");
+            });
+
+            services.AddHttpsRedirection(options =>
+            {
+                options.RedirectStatusCode = StatusCodes.Status308PermanentRedirect;
+                options.HttpsPort = 443;
             });
         }
 
@@ -45,13 +58,11 @@ namespace BlazorMvc.Server
             }
 
             app.UseHttpsRedirection();
+
             app.UseBlazorFrameworkFiles();
             app.UseStaticFiles();
 
             app.UseRouting();
-
-            // app.UseCors("AllowAny");
-            app.UseCors();
 
             app.UseEndpoints(endpoints =>
             {
