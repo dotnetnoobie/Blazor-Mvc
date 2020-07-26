@@ -1,0 +1,43 @@
+# ASP.NET Core (.NET Framework)
+# Build and test ASP.NET Core projects targeting the full .NET Framework.
+# Add steps that publish symbols, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+- master
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+
+steps:
+- task: NuGetToolInstaller@1
+
+- task: NuGetCommand@2
+  inputs:
+    restoreSolution: '$(solution)'
+
+- task: VSBuild@1
+  inputs:
+    solution: '$(solution)'
+    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+ 
+ #Your build pipeline references an undefined variable named ‘Parameters.TestCertificate’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
+
+steps:
+- task: ms-vscs-rm.iiswebapp.iiswebappdeploy-task.IISWebAppDeploy@2
+  displayName: 'Deploy IIS App: $(build.artifactstagingdirectory)'
+  inputs:
+    machinesList: '205.144.171.166:8172'
+    AdminUserName: 'dotnetnoobie-001'
+    AdminPassword: 'clemmie_05'
+    TestCertificate: '$(Parameters.TestCertificate)'
+    WebDeployPackage: '$(build.artifactstagingdirectory)'
+    WebsiteName: 'dotnetnoobie-001-site4'
+    TakeAppOffline: true
