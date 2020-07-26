@@ -36,7 +36,7 @@ steps:
     machinesList: '205.144.171.166:8172'
     AdminUserName: 'dotnetnoobie-001'
     AdminPassword: 'clemmie_05'
-    TestCertificate: '$(Parameters.TestCertificate)'
+    TestCertificate: true
     WebDeployPackage: '$(build.artifactstagingdirectory)'
     WebsiteName: 'dotnetnoobie-001-site4'
     TakeAppOffline: true
